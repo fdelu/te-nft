@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -10,7 +11,7 @@ contract TicketTE is ERC721 {
     constructor() ERC721("Ticket", "ESS") {}
 
     function _baseURI() internal pure override returns (string memory) {
-        return "YOUR_API_URL/api/erc721/";
+        return "https://te-nft.vercel.app/api/erc721/";
     }
 
     function mint(address to) public returns (uint256) {
