@@ -13,6 +13,10 @@ const infuraKey = process.env["INFURA_KEY"];
 const { ganache } = require("ganache-core");
 const HDWalletProvider = require("@truffle/hdwallet-provider");
 
+require("ts-node").register({
+  files: true,
+});
+
 module.exports = {
   /**
    * contracts_build_directory tells Truffle where to store compiled contracts

@@ -1,19 +1,18 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { utils } from "ethers";
-
+import { useRouter } from "next/router";
 import {
   getMarketplaceContract,
   getProvider,
   getTicketNFTContract,
-  ticketNFTNetworks,
 } from "../util/ethers";
-
 import { NFT } from "../types/NFT";
+import { utils } from "ethers";
 
-export default function Home() {
+export default function MyAssets() {
   const [nfts, setNfts] = useState<NFT[]>([]);
   const [loadingState, setLoadingState] = useState("not-loaded");
+  const router = useRouter();
 
   useEffect(() => {
     loadNFTs();
@@ -22,25 +21,17 @@ export default function Home() {
   async function loadNFTs() {
     const provider = await getProvider();
     const { chainId } = await provider.getNetwork();
-
-    // Get all listed NFTs
     const marketPlaceContract = await getMarketplaceContract(provider, chainId);
+    const ticketNFTContract = await getTicketNFTContract(provider, chainId);
+    const accounts = await provider.listAccounts();
+    const data = await marketPlaceContract.getMyNfts({ from: accounts[0] });
 
-    const listings = await marketPlaceContract.getListedNfts();
-
-    // Iterate over the listed NFTs and retrieve their metadata
     const nfts = await Promise.all(
-      listings.map(async (i) => {
+      data.map(async (i) => {
         try {
-          const ticketsNFTContract = await getTicketNFTContract(
-            provider,
-            chainId
-          );
-          const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
-
+          const tokenURI = await ticketNFTContract.tokenURI(i.tokenId);
           const meta = await axios.get(tokenURI);
-
-          const nft: NFT = {
+          let nft: NFT = {
             price: i.price,
             tokenId: i.tokenId,
             seller: i.seller,
@@ -48,6 +39,7 @@ export default function Home() {
             image: meta.data.image,
             name: meta.data.name,
             description: meta.data.description,
+            tokenURI: tokenURI,
           };
           return nft;
         } catch (err) {
@@ -56,37 +48,25 @@ export default function Home() {
         }
       })
     );
-
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
     setLoadingState("loaded");
   }
 
-  async function buyNft(nft: NFT) {
-    const provider = await getProvider();
-    const { chainId } = await provider.getNetwork();
-
-    const marketPlaceContract = await getMarketplaceContract(provider, chainId);
-
-    const accounts = await provider.listAccounts();
-    await marketPlaceContract.buyNft(
-      ticketNFTNetworks[chainId].address,
-      nft.tokenId,
-      { from: accounts[0], value: nft.price }
-    );
-    loadNFTs();
+  function listNFT(nft: NFT) {
+    router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`);
   }
 
   if (loadingState === "loaded" && !nfts.length) {
-    return <h1 className="px-20 py-10 text-3xl">No tickets available!</h1>;
+    return <h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>;
   } else {
     return (
       <div className="flex justify-center">
-        <div className="px-4" style={{ maxWidth: "1600px" }}>
+        <div className="p-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
             {nfts.map((nft, i) => (
               <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} />
+                <img src={nft.image} className="rounded" />
                 <div className="p-4">
                   <p
                     style={{ height: "64px" }}
@@ -100,13 +80,13 @@ export default function Home() {
                 </div>
                 <div className="p-4 bg-black">
                   <p className="text-2xl font-bold text-white">
-                    {utils.formatEther(nft.price)} ETH
+                    Price - {utils.formatEther(nft.price)} ETH
                   </p>
                   <button
                     className="mt-4 w-full bg-teal-400 text-white font-bold py-2 px-12 rounded"
-                    onClick={() => buyNft(nft)}
+                    onClick={() => listNFT(nft)}
                   >
-                    Buy
+                    List
                   </button>
                 </div>
               </div>

@@ -6,6 +6,7 @@ export interface NFT {
   seller: string;
   owner: string;
   image: any;
-  name: any;
-  description: any;
+  name?: any;
+  description?: any;
+  tokenURI?: string;
 }

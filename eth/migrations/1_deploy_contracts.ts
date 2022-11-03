@@ -1,7 +1,7 @@
 var TicketNFT = artifacts.require("TicketNFT");
 var Marketplace = artifacts.require("Marketplace");
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer: Truffle.Deployer) {
   await deployer.deploy(Marketplace);
   const marketplace = await Marketplace.deployed();
   await deployer.deploy(TicketNFT, marketplace.address);
