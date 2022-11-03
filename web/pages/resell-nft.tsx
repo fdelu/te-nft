@@ -35,7 +35,8 @@ export default function ResellNFT() {
       const { chainId } = await provider.getNetwork();
       const marketPlaceContract = await getMarketplaceContract(
         provider,
-        chainId
+        chainId,
+        true
       );
       let listingFee = (await marketPlaceContract.getListingFee()).toString();
       const accounts = await provider.listAccounts();

@@ -36,8 +36,8 @@ export default function Home() {
             provider,
             chainId
           );
-          const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
 
+          const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
           const meta = await axios.get(tokenURI);
 
           const nft: NFT = {
@@ -66,7 +66,11 @@ export default function Home() {
     const provider = await getProvider();
     const { chainId } = await provider.getNetwork();
 
-    const marketPlaceContract = await getMarketplaceContract(provider, chainId);
+    const marketPlaceContract = await getMarketplaceContract(
+      provider,
+      chainId,
+      true
+    );
 
     const accounts = await provider.listAccounts();
     await marketPlaceContract.buyNft(

@@ -19,30 +19,32 @@ export async function getProvider(): Promise<providers.Web3Provider> {
 
 export async function getMarketplaceContract(
   provider: providers.Web3Provider,
-  chainId?: number
+  chainId: number,
+  signer: boolean = false
 ) {
   if (!chainId) {
     chainId = (await provider.getNetwork()).chainId;
   }
-  console.log("chainId: ", chainId);
+
   return new Contract(
     marketplaceNetworks[chainId].address,
     Marketplace.abi,
-    provider
+    signer ? provider.getSigner() : provider
   ) as MarketplaceContract;
 }
 
 export async function getTicketNFTContract(
   provider: providers.Web3Provider,
-  chainId?: number
+  chainId: number,
+  signer: boolean = false
 ) {
   if (!chainId) {
     chainId = (await provider.getNetwork()).chainId;
   }
-  console.log("chainId: ", chainId);
+
   return new Contract(
     ticketNFTNetworks[chainId].address,
     TicketNFT.abi,
-    provider
+    signer ? provider.getSigner() : provider
   ) as TicketNFTContract;
 }

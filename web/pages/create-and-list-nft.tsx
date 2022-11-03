@@ -1,7 +1,7 @@
 import { ChangeEvent, useState } from "react";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 
 import {
   getMarketplaceContract,
@@ -11,12 +11,13 @@ import {
 } from "../util/ethers";
 
 // Todo: Use Next.js API call to avoid exposiing this to the browser
-const projectId = process.env.NEXT_PUBLIC_INFURA_KEY;
-const projectSecret = process.env.NEXT_PUBLIC_INFURA_SECRET;
+const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
+const projectSecret = process.env.NEXT_PUBLIC_INFURA_API_KEY_SECRET;
 const auth =
   "Basic " + Buffer.from(`${projectId}:${projectSecret}`).toString("base64");
+const IPFS_URL = "infura-ipfs.io";
 const client = ipfsHttpClient({
-  host: "ipfs.infura.io",
+  host: IPFS_URL,
   port: 5001,
   protocol: "https",
   headers: {
@@ -39,9 +40,9 @@ export default function CreateItem() {
     if (!file) return;
     try {
       const added = await client.add(file, {
-        progress: (prog) => console.log(`received: ${prog}`),
+        progress: (prog) => console.log(`Received: ${prog}`),
       });
-      const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+      const url = `https://${IPFS_URL}/ipfs/${added.path}`;
       setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
@@ -61,7 +62,7 @@ export default function CreateItem() {
       });
       try {
         const added = await client.add(data);
-        const url = `https://ipfs.infura.io/ipfs/${added.path}`;
+        const url = `https://${IPFS_URL}/ipfs/${added.path}`;
         // after metadata is uploaded to IPFS, return the URL to use it in the transaction
         return url;
       } catch (error) {
@@ -78,20 +79,31 @@ export default function CreateItem() {
     const { chainId } = await provider.getNetwork();
 
     // Mint the NFT
-    const ticketNFTContract = await getTicketNFTContract(provider, chainId);
+    const ticketNFTContract = await getTicketNFTContract(
+      provider,
+      chainId,
+      true
+    );
     const accounts = await provider.listAccounts();
-    const marketPlaceContract = await getMarketplaceContract(provider, chainId);
+    const marketPlaceContract = await getMarketplaceContract(
+      provider,
+      chainId,
+      true
+    );
     let listingFee = (await marketPlaceContract.getListingFee()).toString();
     const receipt = await (
       await ticketNFTContract.mint(url, { from: accounts[0] })
     ).wait();
 
-    console.log("minted");
+    console.log("Minted");
 
     // List the NFT
     const tokenId = receipt.events?.find((e) => e.event == "NFTMinted")
-      ?.args?.[0];
-    if (!tokenId) return;
+      ?.args?.[0] as BigNumber;
+    if (!tokenId) {
+      console.error("Error: Token ID not found");
+      return;
+    }
     await (
       await marketPlaceContract.listNft(
         ticketNFTNetworks[chainId].address,
