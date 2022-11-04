@@ -6,7 +6,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <div>
       <nav className="border-b p-6">
-        <p className="text-4xl font-bold">Bored Pet Marketplace</p>
+        <p className="text-4xl font-bold">NFT Event Tickets</p>
         <div className="flex mt-4">
           <Link href="/" className="mr-4 text-teal-400">
             Home
