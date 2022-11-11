@@ -13,11 +13,12 @@ contract TicketNFT is ERC721URIStorage {
 
     constructor(address _marketplaceContract) ERC721("Ticket NFT", "TNFT") {
         marketplaceContract = _marketplaceContract;
+        _tokenIds.increment();
     }
 
     function mint(string memory _tokenURI) public {
-        _tokenIds.increment();
         uint256 newTokenId = _tokenIds.current();
+        _tokenIds.increment();
         _safeMint(msg.sender, newTokenId);
         _setTokenURI(newTokenId, _tokenURI);
         setApprovalForAll(marketplaceContract, true);

@@ -44,7 +44,7 @@ export default function ResellNFT() {
         await marketPlaceContract.resellNft(
           ticketNFTNetworks[chainId].address,
           id.toString(),
-          utils.formatEther(formInput.price),
+          utils.parseUnits(formInput.price, "ether"),
           { from: accounts[0], value: listingFee }
         )
       ).wait();

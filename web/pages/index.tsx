@@ -1,6 +1,8 @@
+import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { utils } from "ethers";
+import { Spinner } from "../components/spinner";
 
 import {
   getMarketplaceContract,
@@ -10,10 +12,11 @@ import {
 } from "../util/ethers";
 
 import { NFT } from "../types/NFT";
+import { LoadingStatus } from "../types/status";
 
 export default function Home() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingState, setLoadingState] = useState("not-loaded");
+  const [loadingState, setLoadingState] = useState<LoadingStatus>("not-loaded");
 
   useEffect(() => {
     loadNFTs();
@@ -28,15 +31,12 @@ export default function Home() {
 
     const listings = await marketPlaceContract.getListedNfts();
 
+    const ticketsNFTContract = await getTicketNFTContract(provider, chainId);
+
     // Iterate over the listed NFTs and retrieve their metadata
     const nfts = await Promise.all(
       listings.map(async (i) => {
         try {
-          const ticketsNFTContract = await getTicketNFTContract(
-            provider,
-            chainId
-          );
-
           const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
           const meta = await axios.get(tokenURI);
 
@@ -49,9 +49,11 @@ export default function Home() {
             name: meta.data.name,
             description: meta.data.description,
           };
+          console.log(`ID: ${i.tokenId}-OK`);
           return nft;
         } catch (err) {
-          console.log(err);
+          console.log(`ID: ${i.tokenId}-ERROR`);
+          console.error(err);
           return null;
         }
       })
@@ -63,6 +65,7 @@ export default function Home() {
   }
 
   async function buyNft(nft: NFT) {
+    setLoadingState("buying");
     const provider = await getProvider();
     const { chainId } = await provider.getNetwork();
 
@@ -73,51 +76,57 @@ export default function Home() {
     );
 
     const accounts = await provider.listAccounts();
-    await marketPlaceContract.buyNft(
+    let tx = await marketPlaceContract.buyNft(
       ticketNFTNetworks[chainId].address,
       nft.tokenId,
       { from: accounts[0], value: nft.price }
     );
-    loadNFTs();
+    setLoadingState("waiting");
+    tx.wait().then(() => loadNFTs());
   }
 
   if (loadingState === "loaded" && !nfts.length) {
     return <h1 className="px-20 py-10 text-3xl">No tickets available!</h1>;
-  } else {
-    return (
-      <div className="flex justify-center">
-        <div className="px-4" style={{ maxWidth: "1600px" }}>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            {nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} />
-                <div className="p-4">
-                  <p
-                    style={{ height: "64px" }}
-                    className="text-2xl font-semibold"
-                  >
-                    {nft.name}
-                  </p>
-                  <div style={{ height: "70px", overflow: "hidden" }}>
-                    <p className="text-gray-400">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">
-                    {utils.formatEther(nft.price)} ETH
-                  </p>
-                  <button
-                    className="mt-4 w-full bg-teal-400 text-white font-bold py-2 px-12 rounded"
-                    onClick={() => buyNft(nft)}
-                  >
-                    Buy
-                  </button>
+  }
+
+  return (
+    <div className="flex justify-center">
+      {loadingState === "not-loaded" ? <Spinner /> : null}
+      {loadingState === "buying" ? <Spinner text="Buying..." /> : null}
+      {loadingState === "waiting" ? (
+        <Spinner text="Waiting for transaction to complete..." />
+      ) : null}
+      <div className="px-4" style={{ maxWidth: "1600px" }}>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          {nfts.map((nft, i) => (
+            <div key={i} className="border shadow rounded-xl overflow-hidden">
+              <img src={nft.image} />
+              <div className="p-4">
+                <p
+                  style={{ height: "64px" }}
+                  className="text-2xl font-semibold"
+                >
+                  {nft.name}
+                </p>
+                <div style={{ height: "70px", overflow: "hidden" }}>
+                  <p className="text-gray-400">{nft.description}</p>
                 </div>
               </div>
-            ))}
-          </div>
+              <div className="p-4 bg-black">
+                <p className="text-2xl font-bold text-white">
+                  {utils.formatEther(nft.price)} ETH
+                </p>
+                <button
+                  className="mt-4 w-full bg-teal-400 text-white font-bold py-2 px-12 rounded"
+                  onClick={() => buyNft(nft)}
+                >
+                  Buy
+                </button>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

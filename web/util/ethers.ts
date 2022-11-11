@@ -25,6 +25,7 @@ export async function getMarketplaceContract(
   if (!chainId) {
     chainId = (await provider.getNetwork()).chainId;
   }
+  console.log(`Network to use: ${chainId}`);
 
   return new Contract(
     marketplaceNetworks[chainId].address,
@@ -41,6 +42,7 @@ export async function getTicketNFTContract(
   if (!chainId) {
     chainId = (await provider.getNetwork()).chainId;
   }
+  console.log(`Network to use: ${chainId}`);
 
   return new Contract(
     ticketNFTNetworks[chainId].address,
