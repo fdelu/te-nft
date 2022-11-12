@@ -2,7 +2,7 @@ import { ChangeEvent, useState } from "react";
 import { create as ipfsHttpClient } from "ipfs-http-client";
 import { useRouter } from "next/router";
 import { BigNumber, utils } from "ethers";
-
+import { Spinner } from "../components/spinner";
 import {
   getMarketplaceContract,
   getProvider,
@@ -27,6 +27,7 @@ const client = ipfsHttpClient({
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
+  const [loadingText, setLoadingText] = useState<string>("");
   const [formInput, updateFormInput] = useState({
     price: "",
     name: "",
@@ -35,18 +36,26 @@ export default function CreateItem() {
   const router = useRouter();
 
   async function onChange(e: ChangeEvent<HTMLInputElement>) {
-    // upload image to IPFS
-    const file = e.target.files?.[0];
+    if (!e.target.files) return;
+
+    const str = "Uploading image to IPFS: ";
+    setLoadingText(str + "0%");
+    const file = e.target.files[0];
+    console.log("File size: ", file?.size);
     if (!file) return;
     try {
       const added = await client.add(file, {
-        progress: (prog) => console.log(`Received: ${prog}`),
+        progress: (prog) => {
+          const perc = Math.round((prog / file.size) * 100);
+          setLoadingText(str + perc + "%");
+        },
       });
       const url = `https://${IPFS_URL}/ipfs/${added.path}`;
       setFileUrl(url);
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
+    setLoadingText("");
   }
 
   async function uploadToIPFS() {
@@ -72,9 +81,11 @@ export default function CreateItem() {
   }
 
   async function listNFTForSale() {
-    console.log("Minting NFT...");
+    setLoadingText("Getting Web3 Provider...");
     const provider = await getProvider();
+    setLoadingText("Uploading NFT metadata to IPFS...");
     const url = await uploadToIPFS();
+    setLoadingText("Minting NFT...");
     if (!url) return;
     const { chainId } = await provider.getNetwork();
 
@@ -91,11 +102,11 @@ export default function CreateItem() {
       true
     );
     let listingFee = (await marketPlaceContract.getListingFee()).toString();
-    const receipt = await (
-      await ticketNFTContract.mint(url, { from: accounts[0] })
-    ).wait();
+    const tx_mint = await ticketNFTContract.mint(url, { from: accounts[0] });
+    setLoadingText("Waiting for transaction to complete...");
+    const receipt = await tx_mint.wait();
 
-    console.log("Minted");
+    setLoadingText("Listing the NFT for sale...");
 
     // List the NFT
     const tokenId = receipt.events?.find((e) => e.event == "NFTMinted")
@@ -104,14 +115,15 @@ export default function CreateItem() {
       console.error("Error: Token ID not found");
       return;
     }
-    await (
-      await marketPlaceContract.listNft(
-        ticketNFTNetworks[chainId].address,
-        tokenId,
-        utils.parseUnits(formInput.price, "ether"),
-        { from: accounts[0], value: listingFee }
-      )
-    ).wait();
+    const tx_list = await marketPlaceContract.listNft(
+      ticketNFTNetworks[chainId].address,
+      tokenId,
+      utils.parseUnits(formInput.price, "ether"),
+      { from: accounts[0], value: listingFee }
+    );
+
+    setLoadingText("Waiting for transaction to complete...");
+    await tx_list.wait();
 
     console.log("listed");
     router.push("/");
@@ -119,6 +131,7 @@ export default function CreateItem() {
 
   return (
     <div className="flex justify-center">
+      {loadingText ? <Spinner text={loadingText} /> : null}
       <div className="w-1/2 flex flex-col pb-12">
         <input
           placeholder="Asset Name"

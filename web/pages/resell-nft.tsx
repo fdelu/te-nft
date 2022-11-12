@@ -7,8 +7,10 @@ import {
   ticketNFTNetworks,
 } from "../util/ethers";
 import { utils } from "ethers";
+import { Spinner } from "../components/spinner";
 
 export default function ResellNFT() {
+  const [loadingText, setLoadingText] = useState("");
   const [formInput, updateFormInput] = useState({ price: "", image: "" });
   const router = useRouter();
   const { id, tokenURI } = router.query;
@@ -31,6 +33,7 @@ export default function ResellNFT() {
     if (!price || !id) {
       return;
     } else {
+      setLoadingText("Listing NFT...");
       const provider = await getProvider();
       const { chainId } = await provider.getNetwork();
       const marketPlaceContract = await getMarketplaceContract(
@@ -40,6 +43,7 @@ export default function ResellNFT() {
       );
       let listingFee = (await marketPlaceContract.getListingFee()).toString();
       const accounts = await provider.listAccounts();
+      setLoadingText("Waiting for transaction to complete...");
       await (
         await marketPlaceContract.resellNft(
           ticketNFTNetworks[chainId].address,
@@ -55,6 +59,8 @@ export default function ResellNFT() {
 
   return (
     <div className="flex justify-center">
+      {loadingText ? <Spinner text={loadingText} /> : null}
+
       <div className="w-1/2 flex flex-col pb-12">
         <input
           placeholder="Asset Price in Eth"

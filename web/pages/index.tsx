@@ -3,7 +3,14 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { utils } from "ethers";
 import { Spinner } from "../components/spinner";
-
+import {
+  Card,
+  CardTitle,
+  CardSubtitle,
+  CardBody,
+  CardText,
+  Button,
+} from "reactstrap";
 import {
   getMarketplaceContract,
   getProvider,
@@ -12,11 +19,10 @@ import {
 } from "../util/ethers";
 
 import { NFT } from "../types/NFT";
-import { LoadingStatus } from "../types/status";
 
 export default function Home() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingState, setLoadingState] = useState<LoadingStatus>("not-loaded");
+  const [loadingText, setLoadingText] = useState<string>("Loading...");
 
   useEffect(() => {
     loadNFTs();
@@ -61,11 +67,11 @@ export default function Home() {
 
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingState("loaded");
+    setLoadingText("");
   }
 
   async function buyNft(nft: NFT) {
-    setLoadingState("buying");
+    setLoadingText("Buying NFT...");
     const provider = await getProvider();
     const { chainId } = await provider.getNetwork();
 
@@ -81,49 +87,40 @@ export default function Home() {
       nft.tokenId,
       { from: accounts[0], value: nft.price }
     );
-    setLoadingState("waiting");
+    setLoadingText("Waiting for transaction to complete...");
     tx.wait().then(() => loadNFTs());
   }
 
-  if (loadingState === "loaded" && !nfts.length) {
+  if (!loadingText && !nfts.length) {
     return <h1 className="px-20 py-10 text-3xl">No tickets available!</h1>;
   }
 
   return (
     <div className="flex justify-center">
-      {loadingState === "not-loaded" ? <Spinner /> : null}
-      {loadingState === "buying" ? <Spinner text="Buying..." /> : null}
-      {loadingState === "waiting" ? (
-        <Spinner text="Waiting for transaction to complete..." />
-      ) : null}
+      {loadingText ? <Spinner text={loadingText} /> : null}
       <div className="px-4" style={{ maxWidth: "1600px" }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
           {nfts.map((nft, i) => (
-            <div key={i} className="border shadow rounded-xl overflow-hidden">
-              <img src={nft.image} />
-              <div className="p-4">
-                <p
-                  style={{ height: "64px" }}
-                  className="text-2xl font-semibold"
-                >
-                  {nft.name}
-                </p>
-                <div style={{ height: "70px", overflow: "hidden" }}>
-                  <p className="text-gray-400">{nft.description}</p>
-                </div>
-              </div>
-              <div className="p-4 bg-black">
-                <p className="text-2xl font-bold text-white">
+            <Card
+              key={i}
+              style={{
+                width: "18rem",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <CardBody style={{ flex: "none" }}>
+                <CardTitle tag="h5">{nft.name}</CardTitle>
+                <CardSubtitle className="mb-2 text-muted" tag="h6">
                   {utils.formatEther(nft.price)} ETH
-                </p>
-                <button
-                  className="mt-4 w-full bg-teal-400 text-white font-bold py-2 px-12 rounded"
-                  onClick={() => buyNft(nft)}
-                >
-                  Buy
-                </button>
-              </div>
-            </div>
+                </CardSubtitle>
+              </CardBody>
+              <img src={nft.image} />
+              <CardBody style={{ flex: "none" }}>
+                <CardText>{nft.description}</CardText>
+                <Button onClick={() => buyNft(nft)}>Buy</Button>
+              </CardBody>
+            </Card>
           ))}
         </div>
       </div>

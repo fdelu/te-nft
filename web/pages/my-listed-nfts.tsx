@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { utils } from "ethers";
-import { Spinner } from "reactstrap";
-
+import { Spinner } from "../components/spinner";
+import { Card, CardTitle, CardSubtitle, CardBody, CardText } from "reactstrap";
 import {
   getMarketplaceContract,
   getProvider,
@@ -13,7 +13,7 @@ import { NFT } from "../types/NFT";
 
 export default function CreatorDashboard() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingState, setLoadingState] = useState("not-loaded");
+  const [loadingText, setLoadingText] = useState<string>("Loading...");
 
   useEffect(() => {
     loadNFTs();
@@ -46,6 +46,8 @@ export default function CreatorDashboard() {
             seller: i.seller,
             owner: i.owner,
             image: meta.data.image,
+            name: meta.data.name,
+            description: meta.data.description,
           };
           return item;
         } catch (err) {
@@ -57,30 +59,43 @@ export default function CreatorDashboard() {
 
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingState("loaded");
+    setLoadingText("");
   }
 
-  if (loadingState === "loaded" && !nfts.length) {
+  if (!loadingText && !nfts.length) {
     return <h1 className="py-10 px-20 text-3xl">No NFTs listed</h1>;
-  } else {
-    return (
-      <div>
-        <div className="p-4">
-          <h2 className="text-2xl py-2">Items Listed</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            {nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} className="rounded" />
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">
-                    Price - {utils.formatEther(nft.price)} ETH
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+  }
+
+  return (
+    <div>
+      {loadingText ? <Spinner text={loadingText} /> : null}
+
+      <div className="p-4">
+        <h2 className="text-2xl py-2">Items Listed</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          {nfts.map((nft, i) => (
+            <Card
+              key={i}
+              style={{
+                width: "18rem",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <CardBody style={{ flex: "none" }}>
+                <CardTitle tag="h5">{nft.name}</CardTitle>
+                <CardSubtitle className="mb-2 text-muted" tag="h6">
+                  {utils.formatEther(nft.price)} ETH
+                </CardSubtitle>
+              </CardBody>
+              <img src={nft.image} />
+              <CardBody style={{ flex: "none" }}>
+                <CardText>{nft.description}</CardText>
+              </CardBody>
+            </Card>
+          ))}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }

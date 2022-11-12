@@ -8,10 +8,19 @@ import {
 } from "../util/ethers";
 import { NFT } from "../types/NFT";
 import { utils } from "ethers";
+import { Spinner } from "../components/spinner";
+import {
+  Card,
+  CardTitle,
+  CardSubtitle,
+  CardBody,
+  CardText,
+  Button,
+} from "reactstrap";
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingState, setLoadingState] = useState("not-loaded");
+  const [loadingText, setLoadingText] = useState("Loading...");
   const router = useRouter();
 
   useEffect(() => {
@@ -50,50 +59,45 @@ export default function MyAssets() {
     );
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingState("loaded");
+    setLoadingText("");
   }
 
   function listNFT(nft: NFT) {
     router.push(`/resell-nft?id=${nft.tokenId}&tokenURI=${nft.tokenURI}`);
   }
 
-  if (loadingState === "loaded" && !nfts.length) {
+  if (!loadingText && !nfts.length) {
     return <h1 className="py-10 px-20 text-3xl">No NFTs owned</h1>;
-  } else {
-    return (
-      <div className="flex justify-center">
-        <div className="p-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-            {nfts.map((nft, i) => (
-              <div key={i} className="border shadow rounded-xl overflow-hidden">
-                <img src={nft.image} className="rounded" />
-                <div className="p-4">
-                  <p
-                    style={{ height: "64px" }}
-                    className="text-2xl font-semibold"
-                  >
-                    {nft.name}
-                  </p>
-                  <div style={{ height: "70px", overflow: "hidden" }}>
-                    <p className="text-gray-400">{nft.description}</p>
-                  </div>
-                </div>
-                <div className="p-4 bg-black">
-                  <p className="text-2xl font-bold text-white">
-                    Price - {utils.formatEther(nft.price)} ETH
-                  </p>
-                  <button
-                    className="mt-4 w-full bg-teal-400 text-white font-bold py-2 px-12 rounded"
-                    onClick={() => listNFT(nft)}
-                  >
-                    List
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+  }
+  return (
+    <div className="flex justify-center">
+      {loadingText ? <Spinner text={loadingText} /> : null}
+      <div className="p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          {nfts.map((nft, i) => (
+            <Card
+              key={i}
+              style={{
+                width: "18rem",
+                display: "flex",
+                justifyContent: "space-between",
+              }}
+            >
+              <CardBody style={{ flex: "none" }}>
+                <CardTitle tag="h5">{nft.name}</CardTitle>
+                <CardSubtitle className="mb-2 text-muted" tag="h6">
+                  {utils.formatEther(nft.price)} ETH
+                </CardSubtitle>
+              </CardBody>
+              <img src={nft.image} />
+              <CardBody style={{ flex: "none" }}>
+                <CardText>{nft.description}</CardText>
+                <Button onClick={() => listNFT(nft)}>List</Button>
+              </CardBody>
+            </Card>
+          ))}
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 }
