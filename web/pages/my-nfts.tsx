@@ -17,10 +17,11 @@ import {
   CardText,
   Button,
 } from "reactstrap";
+import { LOADING_TEXT } from "../types/loading-messages";
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingText, setLoadingText] = useState("Loading...");
+  const [loadingText, setLoadingText] = useState(LOADING_TEXT.LOAD);
   const router = useRouter();
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function MyAssets() {
     );
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingText("");
+    setLoadingText(LOADING_TEXT.EMPTY);
   }
 
   function listNFT(nft: NFT) {

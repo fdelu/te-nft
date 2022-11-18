@@ -8,9 +8,10 @@ import {
 } from "../util/ethers";
 import { utils } from "ethers";
 import { Spinner } from "../components/spinner";
+import { LOADING_TEXT } from "../types/loading-messages";
 
 export default function ResellNFT() {
-  const [loadingText, setLoadingText] = useState("");
+  const [loadingText, setLoadingText] = useState(LOADING_TEXT.EMPTY);
   const [formInput, updateFormInput] = useState({ price: "", image: "" });
   const router = useRouter();
   const { id, tokenURI } = router.query;
@@ -33,7 +34,7 @@ export default function ResellNFT() {
     if (!price || !id) {
       return;
     } else {
-      setLoadingText("Listing NFT...");
+      setLoadingText(LOADING_TEXT.LIST_NFT);
       const provider = await getProvider();
       const { chainId } = await provider.getNetwork();
       const marketPlaceContract = await getMarketplaceContract(
@@ -43,7 +44,7 @@ export default function ResellNFT() {
       );
       let listingFee = (await marketPlaceContract.getListingFee()).toString();
       const accounts = await provider.listAccounts();
-      setLoadingText("Waiting for transaction to complete...");
+      setLoadingText(LOADING_TEXT.WAIT_TRANSACTION);
       await (
         await marketPlaceContract.resellNft(
           ticketNFTNetworks[chainId].address,

@@ -10,10 +10,11 @@ import {
 } from "../util/ethers";
 
 import { NFT } from "../types/NFT";
+import { LOADING_TEXT } from "../types/loading-messages";
 
 export default function CreatorDashboard() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingText, setLoadingText] = useState<string>("Loading...");
+  const [loadingText, setLoadingText] = useState<string>(LOADING_TEXT.LOAD);
 
   useEffect(() => {
     loadNFTs();
@@ -59,7 +60,7 @@ export default function CreatorDashboard() {
 
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingText("");
+    setLoadingText(LOADING_TEXT.EMPTY);
   }
 
   if (!loadingText && !nfts.length) {

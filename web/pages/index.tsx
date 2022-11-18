@@ -19,10 +19,11 @@ import {
 } from "../util/ethers";
 
 import { NFT } from "../types/NFT";
+import { LOADING_TEXT } from "../types/loading-messages";
 
 export default function Home() {
   const [nfts, setNfts] = useState<NFT[]>([]);
-  const [loadingText, setLoadingText] = useState<string>("Loading...");
+  const [loadingText, setLoadingText] = useState<string>(LOADING_TEXT.LOAD);
 
   useEffect(() => {
     loadNFTs();
@@ -67,11 +68,11 @@ export default function Home() {
 
     // @ts-ignore
     setNfts(nfts.filter((nft) => nft !== null));
-    setLoadingText("");
+    setLoadingText(LOADING_TEXT.EMPTY);
   }
 
   async function buyNft(nft: NFT) {
-    setLoadingText("Buying NFT...");
+    setLoadingText(LOADING_TEXT.BUY_NFT);
     const provider = await getProvider();
     const { chainId } = await provider.getNetwork();
 
@@ -87,7 +88,7 @@ export default function Home() {
       nft.tokenId,
       { from: accounts[0], value: nft.price }
     );
-    setLoadingText("Waiting for transaction to complete...");
+    setLoadingText(LOADING_TEXT.WAIT_TRANSACTION);
     tx.wait().then(() => loadNFTs());
   }
 
