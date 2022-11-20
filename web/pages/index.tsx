@@ -10,6 +10,7 @@ import {
   CardBody,
   CardText,
   Button,
+  Media,
 } from "reactstrap";
 import {
   getMarketplaceContract,
@@ -18,6 +19,7 @@ import {
   ticketNFTNetworks,
 } from "../util/ethers";
 
+import styles from "./styles.module.scss";
 import { NFT } from "../types/NFT";
 
 export default function Home() {
@@ -108,6 +110,7 @@ export default function Home() {
                 display: "flex",
                 justifyContent: "space-between",
               }}
+              className={styles.focusCard}
             >
               <CardBody style={{ flex: "none" }}>
                 <CardTitle tag="h5">{nft.name}</CardTitle>
@@ -115,7 +118,8 @@ export default function Home() {
                   {utils.formatEther(nft.price)} ETH
                 </CardSubtitle>
               </CardBody>
-              <img src={nft.image} />
+              {/* <Media object src={nft.image} style={{height: "40%"}} /> */}
+              <Media object src={nft.image} className={styles.agrandar}/>
               <CardBody style={{ flex: "none" }}>
                 <CardText>{nft.description}</CardText>
                 <Button onClick={() => buyNft(nft)}>Buy</Button>
