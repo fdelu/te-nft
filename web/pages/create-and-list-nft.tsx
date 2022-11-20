@@ -9,6 +9,7 @@ import {
   getTicketNFTContract,
   ticketNFTNetworks,
 } from "../util/ethers";
+import { LOADING_TEXT } from "../types/loading-messages";
 
 // Todo: Use Next.js API call to avoid exposiing this to the browser
 const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
@@ -27,7 +28,7 @@ const client = ipfsHttpClient({
 
 export default function CreateItem() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
-  const [loadingText, setLoadingText] = useState<string>("");
+  const [loadingText, setLoadingText] = useState<string>(LOADING_TEXT.EMPTY);
   const [formInput, updateFormInput] = useState({
     price: "",
     name: "",
@@ -39,7 +40,7 @@ export default function CreateItem() {
     if (!e.target.files) return;
 
     const str = "Uploading image to IPFS: ";
-    setLoadingText(str + "0%");
+    setLoadingText(LOADING_TEXT.UPLOAD_IMAGE + "0%");
     const file = e.target.files[0];
     console.log("File size: ", file?.size);
     if (!file) return;
@@ -47,7 +48,7 @@ export default function CreateItem() {
       const added = await client.add(file, {
         progress: (prog) => {
           const perc = Math.round((prog / file.size) * 100);
-          setLoadingText(str + perc + "%");
+          setLoadingText(LOADING_TEXT.UPLOAD_IMAGE + perc + "%");
         },
       });
       const url = `https://${IPFS_URL}/ipfs/${added.path}`;
@@ -55,7 +56,7 @@ export default function CreateItem() {
     } catch (error) {
       console.log("Error uploading file: ", error);
     }
-    setLoadingText("");
+    setLoadingText(LOADING_TEXT.EMPTY);
   }
 
   async function uploadToIPFS() {
@@ -81,11 +82,11 @@ export default function CreateItem() {
   }
 
   async function listNFTForSale() {
-    setLoadingText("Getting Web3 Provider...");
+    setLoadingText(LOADING_TEXT.WEB3);
     const provider = await getProvider();
-    setLoadingText("Uploading NFT metadata to IPFS...");
+    setLoadingText(LOADING_TEXT.UPLOAD_NFT);
     const url = await uploadToIPFS();
-    setLoadingText("Minting NFT...");
+    setLoadingText(LOADING_TEXT.MINT_NFT);
     if (!url) return;
     const { chainId } = await provider.getNetwork();
 
@@ -103,10 +104,10 @@ export default function CreateItem() {
     );
     let listingFee = (await marketPlaceContract.getListingFee()).toString();
     const tx_mint = await ticketNFTContract.mint(url, { from: accounts[0] });
-    setLoadingText("Waiting for transaction to complete...");
+    setLoadingText(LOADING_TEXT.WAIT_TRANSACTION);
     const receipt = await tx_mint.wait();
 
-    setLoadingText("Listing the NFT for sale...");
+    setLoadingText(LOADING_TEXT.LIST_NFT_FOR_SALE);
 
     // List the NFT
     const tokenId = receipt.events?.find((e) => e.event == "NFTMinted")
@@ -122,7 +123,7 @@ export default function CreateItem() {
       { from: accounts[0], value: listingFee }
     );
 
-    setLoadingText("Waiting for transaction to complete...");
+    setLoadingText(LOADING_TEXT.WAIT_TRANSACTION);
     await tx_list.wait();
 
     console.log("listed");
