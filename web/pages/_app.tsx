@@ -8,9 +8,9 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   const pageLinksInformation = [
     { text: "Market", href: "/" },
-    { text: "Sell New NFT", href: "/create-and-list-nft" },
-    { text: "My NFTS", href: "/my-nfts" },
-    { text: "My Listed NFTs", href: "/my-listed-nfts" },
+    { text: "Sell New Ticket", href: "/create-and-list-tickets" },
+    { text: "Tickets Owned", href: "/my-tickets" },
+    { text: "My Tickets on Market", href: "/my-listed-tickets" },
   ]
 
   const Links = pageLinksInformation.map(el => (
