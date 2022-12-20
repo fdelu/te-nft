@@ -10,6 +10,7 @@ import {
   ticketNFTNetworks,
 } from "../util/ethers";
 import { LOADING_TEXT } from "../types/loading-messages";
+import styles from "./styles.module.scss";
 
 // Todo: Use Next.js API call to avoid exposiing this to the browser
 const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
@@ -161,7 +162,7 @@ export default function CreateItem() {
         {fileUrl && <img className="rounded mt-4" width="350" src={fileUrl} />}
         <button
           onClick={listNFTForSale}
-          className="font-bold mt-4 bg-teal-400 text-white rounded p-4 shadow-lg"
+          className={styles.buttongBackground}
         >
           Mint and list NFT
         </button>
