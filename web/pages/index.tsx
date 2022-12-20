@@ -22,6 +22,7 @@ import {
 import styles from "./styles.module.scss";
 import { NFT } from "../types/NFT";
 import { LOADING_TEXT } from "../types/loading-messages";
+import {getTokenUri} from "../util/utils";
 
 export default function Home() {
   const [nfts, setNfts] = useState<NFT[]>([]);
@@ -46,8 +47,7 @@ export default function Home() {
     const nfts = await Promise.all(
       listings.map(async (i) => {
         try {
-          const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
-          console.log(tokenURI);
+          const tokenURI = getTokenUri(await ticketsNFTContract.tokenURI(i.tokenId));
           const meta = await axios.get(tokenURI);
 
           const nft: NFT = {

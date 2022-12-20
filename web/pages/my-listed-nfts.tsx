@@ -8,7 +8,7 @@ import {
   getProvider,
   getTicketNFTContract,
 } from "../util/ethers";
-
+import { getTokenUri } from "../util/utils";
 import { NFT } from "../types/NFT";
 import { LOADING_TEXT } from "../types/loading-messages";
 
@@ -39,7 +39,10 @@ export default function CreatorDashboard() {
             provider,
             chainId
           );
-          const tokenURI = await ticketNFTContract.tokenURI(i.tokenId);
+          const tokenURI = getTokenUri(await ticketNFTContract.tokenURI(i.tokenId));
+
+          // const tokenURIPath = await ticketNFTContract.tokenURI(i.tokenId);
+          // const tokenURI = `https://ipfs.io/ipfs/${tokenURIPath}`;
           const meta = await axios.get(tokenURI);
           let item: NFT = {
             price: i.price,

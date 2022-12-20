@@ -18,6 +18,7 @@ import {
   Button,
 } from "reactstrap";
 import { LOADING_TEXT } from "../types/loading-messages";
+import { getTokenUri } from "../util/utils";
 
 export default function MyAssets() {
   const [nfts, setNfts] = useState<NFT[]>([]);
@@ -39,7 +40,10 @@ export default function MyAssets() {
     const nfts = await Promise.all(
       data.map(async (i) => {
         try {
-          const tokenURI = await ticketNFTContract.tokenURI(i.tokenId);
+          const tokenURI = getTokenUri(await ticketNFTContract.tokenURI(i.tokenId));
+          // const tokenURIPath = await ticketNFTContract.tokenURI(i.tokenId);
+          // const tokenURI = `https://ipfs.io/ipfs/${tokenURIPath}`;
+          // const tokenURI = await ticketNFTContract.tokenURI(i.tokenId);
           const meta = await axios.get(tokenURI);
           let nft: NFT = {
             price: i.price,
