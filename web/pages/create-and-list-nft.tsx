@@ -15,7 +15,7 @@ const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
 const projectSecret = process.env.NEXT_PUBLIC_INFURA_API_KEY_SECRET;
 const auth =
   "Basic " + Buffer.from(`${projectId}:${projectSecret}`).toString("base64");
-const IPFS_URL = "infura-ipfs.io";
+const IPFS_URL = "ipfs.io";
 const client = ipfsHttpClient({
   host: IPFS_URL,
   port: 5001,

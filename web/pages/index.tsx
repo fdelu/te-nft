@@ -46,6 +46,7 @@ export default function Home() {
       listings.map(async (i) => {
         try {
           const tokenURI = await ticketsNFTContract.tokenURI(i.tokenId);
+          console.log(tokenURI);
           const meta = await axios.get(tokenURI);
 
           const nft: NFT = {
