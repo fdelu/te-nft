@@ -35,7 +35,7 @@ Para agregar dinero a la wallet, ingresar a [link](https://optimismfaucet.xyz/).
   - `NEXT_PUBLIC_INFURA_PROJECT_ID="xxx"`
   - `NEXT_PUBLIC_INFURA_API_KEY_SECRET="xxx"`
 
-### ¿Cómo se compila el proy**ecto?
+### ¿Cómo se compila el proyecto?
 
 - Primero compilamos los contratos que estan en `/eth`
 ```
