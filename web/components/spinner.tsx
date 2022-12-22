@@ -1,5 +1,6 @@
 import React from "react";
 import { Spinner as SpinnerStrap } from "reactstrap";
+import styles from "../pages/styles.module.scss";
 
 type SpinnerProps = {
   text?: string;
@@ -8,8 +9,8 @@ type SpinnerProps = {
 export const Spinner = ({ text }: SpinnerProps) => {
   return (
     <div className="spinnerContainer">
-      <SpinnerStrap />
-      <h1 className="px-20 py-10 text-3xl">{text}</h1>
+      <SpinnerStrap className={styles.spinner}/>
+      <h1 className={styles.loadingText}>{text}</h1>
     </div>
   );
 };
