@@ -61,6 +61,7 @@ export default function CreateItem() {
   }
 
   async function uploadToIPFS() {
+    console.log(formInput);
     const { name, description, price } = formInput;
     if (!name || !description || !price || !fileUrl) {
       return;

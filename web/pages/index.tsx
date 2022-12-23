@@ -45,7 +45,7 @@ export default function Home() {
 
     // Iterate over the listed NFTs and retrieve their metadata
     const nfts = await Promise.all(
-      listings.map(async (i) => {
+      listings.filter(i => !i.tokenId.isZero()).map(async (i) => {
         try {
           const tokenURI = getTokenUri(await ticketsNFTContract.tokenURI(i.tokenId));
           const meta = await axios.get(tokenURI);
