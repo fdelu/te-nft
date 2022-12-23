@@ -1,17 +1,8 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { utils } from "ethers";
 import { Spinner } from "../components/spinner";
-import {
-  Card,
-  CardTitle,
-  CardSubtitle,
-  CardBody,
-  CardText,
-  Button,
-  Media,
-} from "reactstrap";
+import { NFTCard } from "../components/NFTCard";
 import {
   getMarketplaceContract,
   getProvider,
@@ -19,10 +10,9 @@ import {
   ticketNFTNetworks,
 } from "../util/ethers";
 
-import styles from "./styles.module.scss";
 import { NFT } from "../types/NFT";
 import { LOADING_TEXT } from "../types/loading-messages";
-import {getTokenUri} from "../util/utils";
+import { getTokenUri } from "../util/utils";
 
 export default function Home() {
   const [nfts, setNfts] = useState<NFT[]>([]);
@@ -95,39 +85,14 @@ export default function Home() {
     tx.wait().then(() => loadNFTs());
   }
 
-  if (!loadingText && !nfts.length) {
-    return <h1 className="px-20 py-10 text-3xl">No tickets available!</h1>;
-  }
+  if (!loadingText && !nfts.length) <h1 className="px-20 py-10 text-3xl">No tickets available!</h1>;
 
   return (
     <div className="flex justify-center">
       {loadingText ? <Spinner text={loadingText} /> : null}
       <div className="px-4" style={{ maxWidth: "1600px" }}>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {nfts.map((nft, i) => (
-            <Card
-              key={i}
-              style={{
-                width: "18rem",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-              className={styles.focusCard}
-            >
-              <CardBody style={{ flex: "none" }}>
-                <CardTitle tag="h5">{nft.name}</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {utils.formatEther(nft.price)} ETH
-                </CardSubtitle>
-              </CardBody>
-              {/* <Media object src={nft.image} style={{height: "40%"}} /> */}
-              <Media object src={nft.image} className={styles.agrandar}/>
-              <CardBody style={{ flex: "none" }}>
-                <CardText>{nft.description}</CardText>
-                <Button onClick={() => buyNft(nft)}>Buy</Button>
-              </CardBody>
-            </Card>
-          ))}
+          {nfts.map((nft, i) => NFTCard({ nft, i, shouldShowButton: true, onClickHandler: buyNft }))}
         </div>
       </div>
     </div>

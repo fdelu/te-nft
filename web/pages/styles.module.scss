@@ -40,7 +40,10 @@
     }
 }
 
-.focusCard {
+.NFTCard {
+    width: 18rem;
+    display: flex;
+    justify-content: space-between;
     &:hover {
         box-shadow: 10px 10px 31px 0px rgba(162, 86, 63, 0.749);
         transform: scale(1.1);

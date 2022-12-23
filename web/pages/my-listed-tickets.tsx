@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { utils } from "ethers";
 import { Spinner } from "../components/spinner";
-import { Card, CardTitle, CardSubtitle, CardBody, CardText } from "reactstrap";
+import { NFTCard } from "../components/NFTCard";
 import {
   getMarketplaceContract,
   getProvider,
@@ -66,38 +65,15 @@ export default function CreatorDashboard() {
     setLoadingText(LOADING_TEXT.EMPTY);
   }
 
-  if (!loadingText && !nfts.length) {
-    return <h1 className="py-10 px-20 text-3xl">No NFTs listed</h1>;
-  }
+  if (!loadingText && !nfts.length) <h1 className="py-10 px-20 text-3xl">No NFTs listed</h1>;
 
   return (
     <div>
       {loadingText ? <Spinner text={loadingText} /> : null}
-
       <div className="p-4">
         <h2 className="text-2xl py-2">Items Listed</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {nfts.map((nft, i) => (
-            <Card
-              key={i}
-              style={{
-                width: "18rem",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <CardBody style={{ flex: "none" }}>
-                <CardTitle tag="h5">{nft.name}</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {utils.formatEther(nft.price)} ETH
-                </CardSubtitle>
-              </CardBody>
-              <img src={nft.image} />
-              <CardBody style={{ flex: "none" }}>
-                <CardText>{nft.description}</CardText>
-              </CardBody>
-            </Card>
-          ))}
+          {nfts.map((nft, i) => NFTCard({ nft, i, shouldShowButton: false }))}
         </div>
       </div>
     </div>
