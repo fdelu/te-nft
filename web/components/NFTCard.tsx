@@ -11,15 +11,17 @@ import {
     Button,
     Media,
 } from "reactstrap";
+import { Method } from "axios";
 
 type NFTCardProps = {
     nft: NFT;
     i: number;
     shouldShowButton: boolean;
-    onClickHandler?(nft: NFT): Promise<void>;
+    buttonText?: string;
+    onClickHandler?(nft: NFT): void;
 };
 
-export const NFTCard = ({ nft, i, shouldShowButton, onClickHandler }: NFTCardProps) =>
+export const NFTCard = ({ nft, i, shouldShowButton, buttonText, onClickHandler }: NFTCardProps) =>
     <Card key={i} className={styles.NFTCard}>
         <CardBody style={{ flex: "none" }}>
             <CardTitle tag="h5">{nft.name}</CardTitle>
@@ -30,6 +32,6 @@ export const NFTCard = ({ nft, i, shouldShowButton, onClickHandler }: NFTCardPro
         <Media object src={nft.image} className={styles.agrandar} />
         <CardBody style={{ flex: "none" }}>
             <CardText>{nft.description}</CardText>
-            {shouldShowButton && onClickHandler && <Button onClick={() => onClickHandler(nft)}>Buy</Button>}
+            {shouldShowButton && onClickHandler && <Button onClick={() => onClickHandler(nft)}>{buttonText}</Button>}
         </CardBody>
     </Card >

@@ -146,6 +146,7 @@ export default function CreateItem() {
           color="secondary"
           id="asset-name"
           label="Asset Name"
+          margin="normal"
           onChange={(e) => updateFormInput({ ...formInput, name: e.target.value })}
           variant="filled" />
         <TextField
@@ -153,11 +154,12 @@ export default function CreateItem() {
           color="secondary"
           id="asset-description"
           label="Asset Description"
+          margin="normal"
           multiline
           onChange={(e) => updateFormInput({ ...formInput, name: e.target.value })}
           rows={4}
           variant="filled"/>
-        <FormControl fullWidth variant="standard" className={styles.textFieldText}>
+        <FormControl fullWidth margin="normal" variant="standard" className={styles.textFieldText}>
           <InputLabel
             className={styles.textFieldTitle}
             color="secondary"
