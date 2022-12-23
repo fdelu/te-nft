@@ -66,6 +66,7 @@ export default function CreateItem() {
   }
 
   async function uploadToIPFS() {
+    console.log(`Form input: ${JSON.stringify(formInput, null, 2)}`);
     const { name, description, price } = formInput;
     if (!name || !description || !price || !fileUrl) {
       return;
@@ -78,6 +79,7 @@ export default function CreateItem() {
       });
       try {
         const added = await client.add(data);
+        console.log(`Added: ${added}`);
         // const url = `https://${IPFS_URL}/ipfs/${added.path}`;
         const url = added.path;
         // after metadata is uploaded to IPFS, return the URL to use it in the transaction
@@ -94,6 +96,7 @@ export default function CreateItem() {
     setLoadingText(LOADING_TEXT.UPLOAD_NFT);
     const url = await uploadToIPFS();
     setLoadingText(LOADING_TEXT.MINT_NFT);
+    console.log(`url: ${url}`)
     if (!url) return;
     const { chainId } = await provider.getNetwork();
 
@@ -156,7 +159,7 @@ export default function CreateItem() {
           label="Asset Description"
           margin="normal"
           multiline
-          onChange={(e) => updateFormInput({ ...formInput, name: e.target.value })}
+          onChange={(e) => updateFormInput({ ...formInput, description: e.target.value })}
           rows={4}
           variant="filled"/>
         <FormControl fullWidth margin="normal" variant="standard" className={styles.textFieldText}>
@@ -169,7 +172,7 @@ export default function CreateItem() {
           <Input
             color="secondary"
             id="filled-adornment-amount"
-            onChange={(e) => updateFormInput({ ...formInput, name: e.target.value })}
+            onChange={(e) => updateFormInput({ ...formInput, price: e.target.value })}
             startAdornment={<InputAdornment className={styles.textFieldTitle}position="start">$ETH</InputAdornment>}
           />
         </FormControl>
