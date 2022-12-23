@@ -57,8 +57,22 @@
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
+.spinnerContainer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #666;
+    opacity: 0.8;
+    z-index: 998;
+    height: 100%;
+    width: 100%;
+}
+
 .spinner{
     color: white;
+    position: fixed;
+    left: 50%;
+    top: 30%;
 }
 
 .loadingText{
@@ -69,4 +83,7 @@
     padding-left: 5rem; /* 80px */
     padding-right: 5rem; /* 80px */
     color: white;
+    position: fixed;
+    top: 30%;
+    left: 25%;
 }

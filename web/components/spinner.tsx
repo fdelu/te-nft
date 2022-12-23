@@ -8,9 +8,9 @@ type SpinnerProps = {
 
 export const Spinner = ({ text }: SpinnerProps) => {
   return (
-    <div className="spinnerContainer">
+    <div className={styles.spinnerContainer}>
       <SpinnerStrap className={styles.spinner}/>
-      <h1 className={styles.loadingText}>{text}</h1>
+      <div className={styles.loadingText}>{text}</div>
     </div>
   );
 };
