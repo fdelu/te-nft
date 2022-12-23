@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   ]
 
   const Links = pageLinksInformation.map(el => (
-    <Link href={el.href} className={styles.pageLink}>{el.text}</Link>
+    <Link href={el.href} className={styles.pageLink} key={el.href}>{el.text}</Link>
   ));
 
   return (
