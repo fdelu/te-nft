@@ -7,8 +7,10 @@ type SpinnerProps = {
 };
 
 export const Spinner = ({ text }: SpinnerProps) =>
-  <div className={styles.spinnerContainer}>
-    <SpinnerStrap className={styles.spinner} />
-    <div className={styles.loadingText}>{text}</div>
+  <div className={styles.spinnerBackground}>
+    <div className={styles.spinnerContainer}>
+      <SpinnerStrap className={styles.spinner} />
+      <div className={styles.loadingText}>{text}</div>
+    </div>
   </div>
 

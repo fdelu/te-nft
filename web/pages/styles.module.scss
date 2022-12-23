@@ -60,39 +60,35 @@
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-.spinnerContainer {
+.spinnerBackground {
+    background-color: rgba(3, 0, 0, 0.737);
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 998;
+    height: 100%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.spinnerContainer {
+    position: fixed;
+    display: flex;
     flex-direction: column;
-    position: absolute;
-    z-index: 2;
-    background-color: rgba(3, 0, 0, 0.737);
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    pointer-events: all;
-    min-height: 100vh;
-    height: 100%;
+    align-items: center;
 }
 
 .spinner {
     color: white;
-    position: fixed;
-    top: 30%;
 }
 
 .loadingText {
     font-size: 1.875rem;
     line-height: 2.25rem;
-    padding-top: 2.5rem;
-    padding-bottom: 2.5rem;
-    padding-left: 5rem;
-    padding-right: 5rem;
+    padding-top: 2.5rem; /* 40px */
     color: white;
-    position: fixed;
-    top: 30%;
 }
 
 .textFieldText {
