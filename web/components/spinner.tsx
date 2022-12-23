@@ -6,11 +6,11 @@ type SpinnerProps = {
   text?: string;
 };
 
-export const Spinner = ({ text }: SpinnerProps) => {
-  return (
+export const Spinner = ({ text }: SpinnerProps) =>
+  <div className={styles.spinnerBackground}>
     <div className={styles.spinnerContainer}>
-      <SpinnerStrap className={styles.spinner}/>
+      <SpinnerStrap className={styles.spinner} />
       <div className={styles.loadingText}>{text}</div>
     </div>
-  );
-};
+  </div>
+

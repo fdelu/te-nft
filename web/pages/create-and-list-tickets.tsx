@@ -11,6 +11,11 @@ import {
 } from "../util/ethers";
 import { LOADING_TEXT } from "../types/loading-messages";
 import styles from "./styles.module.scss";
+import TextField from '@mui/material/TextField';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormControl from '@mui/material/FormControl';
 
 // Todo: Use Next.js API call to avoid exposiing this to the browser
 const projectId = process.env.NEXT_PUBLIC_INFURA_PROJECT_ID;
@@ -61,6 +66,7 @@ export default function CreateItem() {
   }
 
   async function uploadToIPFS() {
+    console.log(`Form input: ${JSON.stringify(formInput, null, 2)}`);
     const { name, description, price } = formInput;
     if (!name || !description || !price || !fileUrl) {
       return;
@@ -73,6 +79,7 @@ export default function CreateItem() {
       });
       try {
         const added = await client.add(data);
+        console.log(`Added: ${added}`);
         // const url = `https://${IPFS_URL}/ipfs/${added.path}`;
         const url = added.path;
         // after metadata is uploaded to IPFS, return the URL to use it in the transaction
@@ -89,6 +96,7 @@ export default function CreateItem() {
     setLoadingText(LOADING_TEXT.UPLOAD_NFT);
     const url = await uploadToIPFS();
     setLoadingText(LOADING_TEXT.MINT_NFT);
+    console.log(`url: ${url}`)
     if (!url) return;
     const { chainId } = await provider.getNetwork();
 
@@ -135,29 +143,39 @@ export default function CreateItem() {
   return (
     <div className="flex justify-center">
       {loadingText ? <Spinner text={loadingText} /> : null}
-      <div className="w-1/2 flex flex-col pb-12">
-        <input
-          placeholder="Asset Name"
-          className="mt-8 border rounded p-4"
-          onChange={(e) =>
-            updateFormInput({ ...formInput, name: e.target.value })
-          }
-        />
-        <textarea
-          placeholder="Asset Description"
-          className="mt-2 border rounded p-4"
-          onChange={(e) =>
-            updateFormInput({ ...formInput, description: e.target.value })
-          }
-        />
-        <input
-          placeholder="Asset Price in Eth"
-          className="mt-2 border rounded p-4"
-          onChange={(e) =>
-            updateFormInput({ ...formInput, price: e.target.value })
-          }
-        />
-
+      <div className="w-1/2 flex flex-col mt-4 pb-12">
+        <TextField
+          className={styles.textFieldText}
+          color="secondary"
+          id="asset-name"
+          label="Asset Name"
+          margin="normal"
+          onChange={(e) => updateFormInput({ ...formInput, name: e.target.value })}
+          variant="filled" />
+        <TextField
+          className={styles.textFieldText}
+          color="secondary"
+          id="asset-description"
+          label="Asset Description"
+          margin="normal"
+          multiline
+          onChange={(e) => updateFormInput({ ...formInput, description: e.target.value })}
+          rows={4}
+          variant="filled"/>
+        <FormControl fullWidth margin="normal" variant="standard" className={styles.textFieldText}>
+          <InputLabel
+            className={styles.textFieldTitle}
+            color="secondary"
+            htmlFor="filled-adornment-amount"
+            > Asset Price
+          </InputLabel>
+          <Input
+            color="secondary"
+            id="filled-adornment-amount"
+            onChange={(e) => updateFormInput({ ...formInput, price: e.target.value })}
+            startAdornment={<InputAdornment className={styles.textFieldTitle}position="start">$ETH</InputAdornment>}
+          />
+        </FormControl>
         <input type="file" name="Asset" className="my-4" onChange={onChange} />
         {fileUrl && <img className="rounded mt-4" width="350" src={fileUrl} />}
         <button

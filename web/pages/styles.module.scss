@@ -40,14 +40,17 @@
     }
 }
 
-.focusCard {
+.NFTCard {
+    width: 18rem;
+    display: flex;
+    justify-content: space-between;
     &:hover {
         box-shadow: 10px 10px 31px 0px rgba(162, 86, 63, 0.749);
         transform: scale(1.1);
     }
 }
 
-.buttongBackground{
+.buttongBackground {
     background-color: #6c757d;
     font-weight: 700;
     margin-top: 1rem;
@@ -57,33 +60,43 @@
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
-.spinnerContainer {
+.spinnerBackground {
+    background-color: rgba(3, 0, 0, 0.737);
     position: fixed;
     top: 0;
     left: 0;
-    background: #666;
-    opacity: 0.8;
     z-index: 998;
     height: 100%;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.spinner{
-    color: white;
+.spinnerContainer {
     position: fixed;
-    left: 50%;
-    top: 30%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.loadingText{
-    font-size: 1.875rem; /* 30px */
-    line-height: 2.25rem; /* 36px */
+.spinner {
+    color: white;
+}
+
+.loadingText {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
     padding-top: 2.5rem; /* 40px */
-    padding-bottom: 2.5rem; /* 40px */
-    padding-left: 5rem; /* 80px */
-    padding-right: 5rem; /* 80px */
     color: white;
-    position: fixed;
-    top: 30%;
-    left: 25%;
+}
+
+.textFieldText {
+    background-color: white !important;
+    margin-top: 1rem;
+    border-radius: 0.25rem;
+}
+
+.textFieldTitle {
+    padding: 5px;
 }

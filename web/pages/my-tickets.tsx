@@ -7,16 +7,8 @@ import {
   getTicketNFTContract,
 } from "../util/ethers";
 import { NFT } from "../types/NFT";
-import { utils } from "ethers";
 import { Spinner } from "../components/spinner";
-import {
-  Card,
-  CardTitle,
-  CardSubtitle,
-  CardBody,
-  CardText,
-  Button,
-} from "reactstrap";
+import { NFTCard } from "../components/NFTCard";
 import { LOADING_TEXT } from "../types/loading-messages";
 import { getTokenUri } from "../util/utils";
 
@@ -79,28 +71,7 @@ export default function MyAssets() {
       {loadingText ? <Spinner text={loadingText} /> : null}
       <div className="p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
-          {nfts.map((nft, i) => (
-            <Card
-              key={i}
-              style={{
-                width: "18rem",
-                display: "flex",
-                justifyContent: "space-between",
-              }}
-            >
-              <CardBody style={{ flex: "none" }}>
-                <CardTitle tag="h5">{nft.name}</CardTitle>
-                <CardSubtitle className="mb-2 text-muted" tag="h6">
-                  {utils.formatEther(nft.price)} ETH
-                </CardSubtitle>
-              </CardBody>
-              <img src={nft.image} />
-              <CardBody style={{ flex: "none" }}>
-                <CardText>{nft.description}</CardText>
-                <Button onClick={() => listNFT(nft)}>List</Button>
-              </CardBody>
-            </Card>
-          ))}
+          {nfts.map((nft, i) => NFTCard({ nft, i, shouldShowButton: true, buttonText: "List", onClickHandler: listNFT }))}
         </div>
       </div>
     </div>
